@@ -4,13 +4,412 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device=width, initial-scale=1" />
   <title>Movie API Documentation</title>
+  <link rel="stylesheet" type="text/css" href="css/styles.css" />
 </head>
 <body>
 
 <h1>Movie API</h1>
-<p>User can access information about films, directors and genres.  Users can also sign up for an account,
-  update personal information and create a favorites list.
+<p>User can access a list of movies, get information about a specified movie or director.  Users can also sign up for an account,
+  create a profile and favorites list.
   </p>
 
+<h2>Resource URL</h2>
+<p>
+  http://127.0.0.1:8080
+</p>
+
+<h2>Requests, URL and responses</h2>
+<table>
+  <tr>
+    <th>
+      Request Type
+    </th>
+    <th>
+      Endpoint URL
+    </th>
+    <th>
+      Query Parameter
+    </th>
+    <th>
+      Body Format
+    </th>
+    <th>
+      Description
+    </th>
+    <th>
+      Response Format
+    </th>
+  </tr>
+  <tr>
+    <td>
+      GET
+    </td>
+    <td>
+      '/movies'
+    </td>
+    <td>
+      -
+    </td>
+    <td>
+      -
+    </td>
+    <td>
+      Get list of ALL movies
+    </td>
+    <td>
+      JSON
+    </td>
+  </tr>
+  <tr>
+    <td>
+      GET
+    </td>
+    <td>
+      '/movies/{movie_title}'
+    </td>
+    <td>
+      movie_title
+    </td>
+    <td>
+      -
+    </td>
+    <td>
+      Get data about a specific movie title
+    </td>
+    <td>
+      JSON
+    </td>
+  </tr>
+  <tr>
+    <td>
+      GET
+    </td>
+    <td>
+      '/generes/{genere_name}/movies'
+    </td>
+    <td>
+      genere_name
+    </td>
+    <td>
+      -
+    </td>
+    <td>
+      Get list of movies of a specific genere
+    </td>
+    <td>
+      JSON
+    </td>
+  </tr>
+  <tr>
+    <td>
+      GET
+    </td>
+    <td>
+      '/directors/{director_name}'
+    </td>
+    <td>
+      director_name
+    </td>
+    <td>
+      -
+    </td>
+    <td>
+      Get data about a specific director
+    </td>
+    <td>
+      JSON
+    </td>
+  </tr>
+  <tr>
+    <td>
+      POST
+    </td>
+    <td>
+      '/user_accounts'
+    </td>
+    <td>
+      -
+    </td>
+    <td>
+      JSON
+      <div id="example-user">
+        jsonNameString
+      </div>
+    </td>
+    <td>
+      Register a new user
+    </td>
+    <td>
+      JSON
+    </td>
+  </tr>
+  <tr>
+    <td>
+      PUT
+    </td>
+    <td>
+      '/user_accounts/{account_id}'
+    </td>
+    <td>
+      account_id
+    </td>
+    <td>
+      -
+    </td>
+    <td>
+      Let user update their information
+    </td>
+    <td>
+      JSON
+    </td>
+  </tr>
+  <tr>
+    <td>
+      POST
+    </td>
+    <td>
+      '/user_accounts/{account_id}/favorites/{movie_name}'
+    </td>
+    <td>
+      account_id, movie_name
+    </td>
+    <td>
+      -
+    </td>
+    <td>
+      Let user add movie to favorites
+    </td>
+    <td>
+      Text
+    </td>
+  </tr>
+  <tr>
+    <td>
+      DELETE
+    </td>
+    <td>
+      '/user_accounts/{account_id}/favorites/{movie_name}'
+    </td>
+    <td>
+      account_id, movie_name
+    </td>
+    <td>
+      -
+    </td>
+    <td>
+      Let user remove movie from favorites list
+    </td>
+    <td>
+      Text
+    </td>
+  </tr>
+  <tr>
+    <td>
+      DELETE
+    </td>
+    <td>
+      '/user_accounts/{account_id}'
+    </td>
+    <td>
+      account_id
+    </td>
+    <td>
+      -
+    </td>
+    <td>
+      Allow user to remove their account
+    </td>
+    <td>
+      Text
+    </td>
+  </tr>
+</table>
+
+<h2>Resource information</h2>
+<table>
+<tr>
+  <td>
+    Response Formats
+  </td>
+  <td>
+    JSON
+  </td>
+</tr>
+<tr>
+  <td>
+    Requires authentication?
+  </td>
+  <td>
+    No
+  </td>
+</tr>
+</table>
+
+<h2>Examples</h2>
+<h3>Example Request</h3>
+<p>
+  'http://127.0.0.1:8080/movies'
+</p>
+
+<h3>Example Response</h3>
+<div id="example-response">
+  jsonNameString
+</div>
+
+<h3>Additional Request Examples</h3>
+
+<table>
+  <tr>
+    <th>
+      Request
+    </th>
+    <th>
+      Example URL
+    </th>
+    <th>
+      Description
+    </th>
+  </tr>
+  <tr>
+    <td>
+      GET
+    </td>
+    <td>
+      'http://127.0.0.1:8080/movies'
+    </td>
+    <td>
+      Get list of ALL movies
+    </td>
+  </tr>
+  <tr>
+    <td>
+      GET
+    </td>
+    <td>
+      'http://127.0.0.1:8080/movies/Interstellar'
+    </td>
+    <td>
+      Get data about a specific movie title
+    </td>
+  </tr>
+  <tr>
+    <td>
+      GET
+    </td>
+    <td>
+      'http://127.0.0.1:8080/generes/thriller/movies'
+    </td>
+    <td>
+      Get list of movies of a specific genere
+    </td>
+  </tr>
+  <tr>
+    <td>
+      GET
+    </td>
+    <td>
+      'http://127.0.0.1:8080/directors/anya'
+    </td>
+    <td>
+      Get data about a specific director
+    </td>
+  </tr>
+  <tr>
+    <td>
+      POST
+    </td>
+    <td>
+      'http://127.0.0.1:8080/user_accounts'
+    </td>
+    <td>
+      Register a new user
+    </td>
+  </tr>
+  <tr>
+    <td>
+      PUT
+    </td>
+    <td>
+      'http://127.0.0.1:8080/user_accounts/abcd123/atraille'
+    </td>
+    <td>
+      Let user update their information
+    </td>
+  </tr>
+  <tr>
+    <td>
+      POST
+    </td>
+    <td>
+      'http://127.0.0.1:8080/user_accounts/abcd123/favorites/Interstellar'
+    </td>
+    <td>
+      Let user add movie to favorites
+    </td>
+  </tr>
+  <tr>
+    <td>
+      DELETE
+    </td>
+    <td>
+      'http://127.0.0.1:8080/user_accounts/abcd123/favorites/Interstellar'
+    </td>
+    <td>
+      Let user remove movie from favorites list
+    </td>
+  </tr>
+  <tr>
+    <td>
+      DELETE
+    </td>
+    <td>
+      'http://127.0.0.1:8080/user_accounts/abc123'
+    </td>
+    <td>
+      Allow user to remove their account
+    </td>
+  </tr>
+</table>
+
+<script>
+  var jsonExample = [
+    {
+      title: 'Interstellar',
+      director: 'Christopher Nolan'
+    },
+    {
+      title: 'Forest Gump',
+      director: 'Robert Zemeckis'
+    },
+    {
+      title: 'X-Men: First Class',
+      director: 'Christopher Nolan'
+    },
+    {
+      title: 'X-Men: Apocalypse',
+      director: 'Bryan Singer'
+    },
+    {
+      title: 'Interstellar',
+      director: 'Christopher Nolan'
+    },
+    {
+      title: 'Interstellar',
+      director: 'Christopher Nolan'
+    }
+  ];
+
+  var jsonExampleUser = {
+    id: 1,
+    name: 'Anya Traille',
+    email: 'anya.traille@gmail.com'
+  };
+
+  var jsonMovieString = JSON.stringify(jsonExample);
+  document.getElementById("example-response").innerHTML = jsonMovieString;
+  var jsonNameString = JSON.stringify(jsonExampleUser);
+  document.getElementById("example-user").innerHTML = jsonNameString;
+</script>
+<script src="css/scripts.js"></script>
 </body>
 </html>

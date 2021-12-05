@@ -1,6 +1,7 @@
 // Used npm init to initialize project with package.json
 // Ran npm install --save express to install express module
 // Ran npm install --save body-parser to install body-parser module
+// Ran npm install --save uuid to install uuid module
 
 // to test run node index.js
 // Listen out for console
@@ -13,6 +14,12 @@ const express = require('express');
 
 // import morgan modulje
 const morgan = require('morgan');
+
+// import bodyParser
+const bodyParser = require('body-parser');
+
+// import UUID
+const uuid = require('uuid');
 
 // get instance of express
 const app = express();
@@ -42,22 +49,6 @@ let topMovies = [
   {
     title: 'Interstellar',
     director: 'Christopher Nolan'
-  },
-  {
-    title: 'Interstellar',
-    director: 'Christopher Nolan'
-  },
-  {
-    title: 'Interstellar',
-    director: 'Christopher Nolan'
-  },
-  {
-    title: 'Interstellar',
-    director: 'Christopher Nolan'
-  },
-  {
-    title: 'Interstellar',
-    director: 'Christopher Nolan'
   }
 ];
 
@@ -66,6 +57,9 @@ app.use(morgan('common'));
 
 // Use the express static function so that all requests are routed to corresponding files within folder
 app.use(express.static('public'));
+
+// User body parser
+app.use(bodyParser.json());
 
 // Error handling
 app.use((err, req, res, next) => {
@@ -96,10 +90,55 @@ app.get('/documentation', (req, res) => {
   res.sendFile('public/documentation.html', { root: __dirname});
 });
 
-// If the endpoint target is /books
+// Get a list of top movies
 app.get('/movies', (req, res) => {
   // Return data for the top books
   res.json(topMovies);
+});
+
+// Get data about a specific movie title
+app.get('/movies/:title', (req, res) => {
+  let titleText = 'You just requested information about: ' + req.params.title;
+  res.send(titleText);
+});
+
+// Get movie names under a specific genere
+app.get('/generes/:genere/movies', (req, res) => {
+  let genereText = 'You just requested a list of movies that fall under: ' + req.params.genere;
+  res.send(genereText);
+});
+
+// Get information about a specific movie director by name
+app.get('/directors/:director_name', (req, res) => {
+  let directorText = 'You just requested information about: ' + req.params.director_name;
+  res.send(directorText);
+});
+
+// Allow new users to register
+app.post('/user_accounts', (req, res) => {
+  let newUser = req.body;
+  newUser.id = uuid.v4();
+  res.status(201).send('You just requested to create a new user account, the unique id is ' + newUser.id);
+});
+
+// All users to update account information (e.g. username)
+app.put('/user_accounts/:account_id/:username', (req, res) => {
+  res.status(201).send('You just requeted to update the username of ' + req.params.account_id +' to ' + req.params.username);
+});
+
+// Add movie to favorites list
+app.post('/user_accounts/:account_id/favorites/:movie_id', (req, res) => {
+  res.status(201).send('You just added ' + req.params.movie_id + ' to ' + req.params.account_id + ' favorites list');
+});
+
+// Remove a movie from the favorites list
+app.delete('/user_accounts/:account_id/favorites/:movie_id', (req, res) => {
+  res.status(201).send('You just removed ' + req.params.movie_id + ' to ' + req.params.account_id + ' favorites list');
+});
+
+// Delete a user account
+app.delete('/user_accounts/:account_id', (req, res) => {
+  res.status(201).send('You just requested to delete a user account of ' + req.params.account_id);
 });
 
 // Listen for requests

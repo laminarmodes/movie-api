@@ -85,7 +85,7 @@
       GET
     </td>
     <td>
-      '/generes/{genere_name}/movies'
+      '/movies/genres/{genere_name}'
     </td>
     <td>
       genere_name
@@ -105,7 +105,7 @@
       GET
     </td>
     <td>
-      '/directors/{director_name}'
+      '/movies/director/{director_name}'
     </td>
     <td>
       director_name
@@ -125,7 +125,7 @@
       POST
     </td>
     <td>
-      '/user_accounts'
+      '/users'
     </td>
     <td>
       -
@@ -148,13 +148,16 @@
       PUT
     </td>
     <td>
-      '/user_accounts/{account_id}'
+      '/users/{username}'
     </td>
     <td>
       account_id
     </td>
     <td>
-      -
+      JSON
+      <div id="example-user-update">
+        jsonNameStringUpdate
+      </div>
     </td>
     <td>
       Let user update their information
@@ -168,7 +171,7 @@
       POST
     </td>
     <td>
-      '/user_accounts/{account_id}/favorites/{movie_name}'
+      '/users/{user_name}/movies/{movie_id}'
     </td>
     <td>
       account_id, movie_name
@@ -188,7 +191,7 @@
       DELETE
     </td>
     <td>
-      '/user_accounts/{account_id}/favorites/{movie_name}'
+      '/users/{user_name}/movies/{movie_id}'
     </td>
     <td>
       account_id, movie_name
@@ -208,7 +211,7 @@
       DELETE
     </td>
     <td>
-      '/user_accounts/{account_id}'
+      '/users/{user_name}'
     </td>
     <td>
       account_id
@@ -297,7 +300,7 @@
       GET
     </td>
     <td>
-      'http://127.0.0.1:8080/generes/thriller/movies'
+      'http://127.0.0.1:8080/movies/genres/Action'
     </td>
     <td>
       Get list of movies of a specific genere
@@ -308,7 +311,7 @@
       GET
     </td>
     <td>
-      'http://127.0.0.1:8080/directors/anya'
+      'http://127.0.0.1:8080/movies/director/Christopher%20Nolan'
     </td>
     <td>
       Get data about a specific director
@@ -319,7 +322,7 @@
       POST
     </td>
     <td>
-      'http://127.0.0.1:8080/user_accounts'
+      'http://127.0.0.1:8080/users'
     </td>
     <td>
       Register a new user
@@ -330,7 +333,7 @@
       PUT
     </td>
     <td>
-      'http://127.0.0.1:8080/user_accounts/abcd123/atraille'
+      'http://127.0.0.1:8080/users/testuserA'
     </td>
     <td>
       Let user update their information
@@ -341,7 +344,7 @@
       POST
     </td>
     <td>
-      'http://127.0.0.1:8080/user_accounts/abcd123/favorites/Interstellar'
+      'http://127.0.0.1:8080/users/testuserA/movies/61b4e20951e9f9068e6eb7d3'
     </td>
     <td>
       Let user add movie to favorites
@@ -352,7 +355,7 @@
       DELETE
     </td>
     <td>
-      'http://127.0.0.1:8080/user_accounts/abcd123/favorites/Interstellar'
+      'http://127.0.0.1:8080/users/testuserA/movies/61b4e20951e9f9068e6eb7d3'
     </td>
     <td>
       Let user remove movie from favorites list
@@ -363,7 +366,7 @@
       DELETE
     </td>
     <td>
-      'http://127.0.0.1:8080/user_accounts/abc123'
+      'http://127.0.0.1:8080/users/testuser'
     </td>
     <td>
       Allow user to remove their account
@@ -400,15 +403,25 @@
   ];
 
   var jsonExampleUser = {
-    id: 1,
-    name: 'Anya Traille',
-    email: 'anya.traille@gmail.com'
+    Username: 'testuser',
+    Password: 'password1234',
+    Email: 'test.user@gmail.com',
+    Birthday: '10/10/1983'
+  };
+
+  var jsonExampleUserUpdate = {
+    Username: 'testuser',
+    Password: 'password1234',
+    Email: 'new.email@gmail.com',
+    Birthday: '10/10/1983'
   };
 
   var jsonMovieString = JSON.stringify(jsonExample);
   document.getElementById("example-response").innerHTML = jsonMovieString;
   var jsonNameString = JSON.stringify(jsonExampleUser);
   document.getElementById("example-user").innerHTML = jsonNameString;
+  var jsonNameStringUpdate = JSON.stringify(jsonExampleUserUpdate);
+  document.getElementById("example-user-update").innerHTML = jsonNameStringUpdate;
 </script>
 <script src="css/scripts.js"></script>
 </body>

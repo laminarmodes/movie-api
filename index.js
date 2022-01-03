@@ -7,6 +7,14 @@
 // Listen out for console
 // Make requestion (e.g. http://127.0.0.1:8080/books)
 
+const mongoose = require('mongoose');
+const Models = require('./models.js');
+
+const Movies = Models.Movie;
+const Users = Models.User;
+
+mongoose.connect('mongodb://localhost:27017/myFlixDB', {
+  useNewUrlParser: true, useUnifiedTopology: true });
 
 
 // import express module
@@ -105,6 +113,11 @@ app.get('/movies/:title', (req, res) => {
 // Get movie names under a specific genere
 app.get('/generes/:genere/movies', (req, res) => {
   let genereText = 'You just requested a list of movies that fall under: ' + req.params.genere;
+
+  // Movies.find({ 'Genre.Name': req.params.genre }, (err, movies) => {
+  //   // Logic here
+  // }).then(movies => movies.json(movies));
+
   res.send(genereText);
 });
 

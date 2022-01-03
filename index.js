@@ -129,9 +129,33 @@ app.get('/directors/:director_name', (req, res) => {
 
 // Allow new users to register
 app.post('/user_accounts', (req, res) => {
-  let newUser = req.body;
-  newUser.id = uuid.v4();
-  res.status(201).send('You just requested to create a new user account, the unique id is ' + newUser.id);
+
+  // let newUser = req.body;
+  // newUser.id = uuid.v4();
+  // res.status(201).send('You just requested to create a new user account, the unique id is ' + newUser.id);
+
+  Users.findOne({ Username: req.body.Username })
+  .then((user) => {
+    if (user) {
+      return res.status(400).send(req.body.Username + ' already exists');
+    } else {
+      Users.create({
+        Username: req.body.Username,
+        Password: req.body.Password,
+        Email: req.body.Email,
+        Birthday: req.body.Birthday
+      }).then(
+        (user) => { res.status(201).json(user) }
+      ).catch(
+        (error) => {
+          console.error(error);
+          res.status(500).send('Error: ' + error);
+        })
+    }
+  }).catch((error) => {
+    console.error(error);
+    res.status(500).send('Error: ' + error);
+  })
 });
 
 // All users to update account information (e.g. username)

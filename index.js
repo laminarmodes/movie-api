@@ -18,6 +18,7 @@
 
 const mongoose = require('mongoose');
 const Models = require('./models.js');
+const { check, validationResult } = require('express-validator');
 
 const Movies = Models.Movie;
 const Users = Models.User;
@@ -70,6 +71,23 @@ let topMovies = [
     director: 'Christopher Nolan'
   }
 ];
+
+// CORS
+const cors = require('cors');
+// Creates a list of allowed domains whtin the variable allowedOrigins
+// Then compares the domains of an yincoming request with the list
+// It either allows (if domain is on list) or returns an error (if domain not on linst)
+let allowedOrigins = ['http://127.0.0.1:8080/', 'http://testsite.com'];
+app.use(cors({
+  origin: (origin, callback) => {
+    if(!origin) return callback(null, true);
+    if(allowedOrigins.indexOf(origin) === -1){
+      let message = 'The CORS policy for this application doesnt allow access from origin ' + origin;
+      return callback(new Error(message), false);
+    }
+    return callback(null, true);
+  }
+}));
 
 // Use the morgan module for
 app.use(morgan('common'));
@@ -193,7 +211,20 @@ app.get('/users/:Username', (req, res) => {
 });
 
 // 5. Allow new users to register
-app.post('/users', (req, res) => {
+app.post('/users', [
+  check('Username', 'Username is required').isLength({min: 5}),
+  check('Username', 'Username contains non-alphanumeric characters, not allwed.').isAlphanumeric(),
+  check('Password', 'Password is required').not().isEmpty(),
+  check('Email', 'Email does not appear to be validated').isEmail()
+], (req, res) => {
+  // Check the validation object for errors
+  let errors = validationResult(req);
+  if(!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+
+  // Hash password
+  let hashedPassword = Users.hashPassword(req.body.Password);
   Users.findOne({ Username: req.body.Username })
   .then((user) => {
     if (user) {
@@ -201,7 +232,7 @@ app.post('/users', (req, res) => {
     } else {
       Users.create({
         Username: req.body.Username,
-        Password: req.body.Password,
+        Password: hashedPassword,
         Email: req.body.Email,
         Birthday: req.body.Birthday
       }).then(
@@ -219,7 +250,18 @@ app.post('/users', (req, res) => {
 });
 
 // 6. All users to update account information (e.g. username)
-app.put('/users/:Username', (req, res) => {
+app.put('/users/:Username', [
+  check('Username', 'Username is required').isLength({min: 5}),
+  check('Username', 'Username contains non-alphanumeric characters, not allwed.').isAlphanumeric(),
+  check('Password', 'Password is required').not().isEmpty(),
+  check('Email', 'Email does not appear to be validated').isEmail()
+],
+(req, res) => {
+  // Check the validation object for errors
+  let errors = validationResult(req);
+  if(!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
   Users.findOneAndUpdate({ Username: req.params.Username }, {
     $set:
     {

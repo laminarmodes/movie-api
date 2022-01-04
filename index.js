@@ -80,6 +80,14 @@ app.use(express.static('public'));
 // User body parser
 app.use(bodyParser.json());
 
+// Import auth.js file
+// 'app' argument ensures that Express is available in auth.js file
+let auth = require('./auth')(app);
+
+// Require passport modulje and import passport.js
+const passport = require('passport');
+require('./passport');
+
 // Error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -125,7 +133,7 @@ app.get('/users', (req, res) => {
 
 
 // 1. Get a list of top movies
-app.get('/movies', (req, res) => {
+app.get('/movies', passport.authenticate('jwt', {session: false}), (req, res) => {
   Movies.find().then(
     (movies) => {
       res.status(201).json(movies);

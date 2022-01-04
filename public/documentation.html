@@ -416,11 +416,11 @@
     Birthday: '10/10/1983'
   };
 
-  var jsonMovieString = JSON.stringify(jsonExample);
+  var jsonMovieString = "<pre>"+JSON.stringify(jsonExample, null, 2)+"</pre>";
   document.getElementById("example-response").innerHTML = jsonMovieString;
-  var jsonNameString = JSON.stringify(jsonExampleUser);
+  var jsonNameString = "<pre>"+JSON.stringify(jsonExampleUser, null, 2)+"</pre>";
   document.getElementById("example-user").innerHTML = jsonNameString;
-  var jsonNameStringUpdate = JSON.stringify(jsonExampleUserUpdate);
+  var jsonNameStringUpdate = "<pre>"+JSON.stringify(jsonExampleUserUpdate, null, 2)+"</pre>";
   document.getElementById("example-user-update").innerHTML = jsonNameStringUpdate;
 </script>
 <script src="css/scripts.js"></script>

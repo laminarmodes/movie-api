@@ -1,0 +1,1 @@
+mongo "mongodb+srv://laminarmodes.mic3t.mongodb.net/myFlixDB" --username myFlixDBAdmin

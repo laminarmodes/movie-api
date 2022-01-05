@@ -23,8 +23,12 @@ const { check, validationResult } = require('express-validator');
 const Movies = Models.Movie;
 const Users = Models.User;
 
-mongoose.connect('mongodb://localhost:27017/myFlixDB', {
-  useNewUrlParser: true, useUnifiedTopology: true });
+// Local database
+// mongoose.connect('mongodb://localhost:27017/myFlixDB', {
+//   useNewUrlParser: true, useUnifiedTopology: true });
+
+  mongoose.connect(process.env.CONNECTION_URI, {
+    useNewUrlParser: true, useUnifiedTopology: true });
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, "MongoDB connection error"));
@@ -335,6 +339,8 @@ app.delete('/users/:Username', (req, res) => {
 // app.listen(8080, () => {
 //   console.log('The app is listening on port 8080');
 // });
+
+
 const port = process.env.PORT || 8080;
 app.listen(port, '0.0.0.0', () => {
   console.log('Listening on Port ' + port);

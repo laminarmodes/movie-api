@@ -167,7 +167,7 @@ app.get('/movies', passport.authenticate('jwt', {session: false}), (req, res) =>
 });
 
 // 2. Get data about a specific movie title
-app.get('/movies/:Title', (req, res) => {
+app.get('/movies/:Title', passport.authenticate('jwt', {session: false}), (req, res) => {
   Movies.findOne({ Title: req.params.Title }).then(
     (movie) => {
       res.json(movie);
@@ -179,7 +179,7 @@ app.get('/movies/:Title', (req, res) => {
 });
 
 // 3. Get movie names under a specific genere
-app.get('/movies/genres/:Genre', (req, res) => {
+app.get('/movies/genres/:Genre', passport.authenticate('jwt', {session: false}), (req, res) => {
   Movies.find({ 'Genre.Name': req.params.Genre }).then(
     (movies) => {
       res.status(201).json(movies);
@@ -191,7 +191,7 @@ app.get('/movies/genres/:Genre', (req, res) => {
 });
 
 // 4. Get information about a specific movie director by name
-app.get('/movies/director/:Name', (req, res) => {
+app.get('/movies/director/:Name', passport.authenticate('jwt', {session: false}), (req, res) => {
   Movies.findOne({ 'Director.Name': req.params.Name }).then(
     (movie) => {
       res.json(movie.Director);
@@ -287,7 +287,7 @@ app.put('/users/:Username', [
 });
 
 // 7. Add a movie to a user's list of favorites
-app.post('/users/:Username/movies/:MovieID', (req, res) => {
+app.post('/users/:Username/movies/:MovieID', passport.authenticate('jwt', {session: false}), (req, res) => {
   Users.findOneAndUpdate({ Username: req.params.Username }, {
     $push: { FavoriteMovies: req.params.MovieID }
   },
@@ -303,7 +303,7 @@ app.post('/users/:Username/movies/:MovieID', (req, res) => {
 });
 
 // 8. Remove a movie from the favorites list 61b4e20951e9f9068e6eb7d3
-app.delete('/users/:Username/movies/:MovieID', (req, res) => {
+app.delete('/users/:Username/movies/:MovieID', passport.authenticate('jwt', {session: false}), (req, res) => {
   Users.findOneAndUpdate({ Username: req.params.Username }, {
     $pull: { FavoriteMovies: req.params.MovieID }
   },
@@ -319,7 +319,7 @@ app.delete('/users/:Username/movies/:MovieID', (req, res) => {
 });
 
 // 9. Delete a user account
-app.delete('/users/:Username', (req, res) => {
+app.delete('/users/:Username', passport.authenticate('jwt', {session: false}), (req, res) => {
   Users.findOneAndRemove({ Username: req.params.Username }).then(
     (user) => {
       if (!user) {

@@ -35,6 +35,8 @@ const Users = Models.User;
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, "MongoDB connection error"));
 
+const cors = require('cors');
+
 // import express module
 const express = require('express');
 
@@ -78,22 +80,25 @@ let topMovies = [
   }
 ];
 
-// CORS
-const cors = require('cors');
+
 // Creates a list of allowed domains whtin the variable allowedOrigins
 // Then compares the domains of an yincoming request with the list
 // It either allows (if domain is on list) or returns an error (if domain not on linst)
-let allowedOrigins = ['http://127.0.0.1:8080/', 'http://localhost:1234/'];
-app.use(cors({
-  origin: (origin, callback) => {
-    if(!origin) return callback(null, true);
-    if(allowedOrigins.indexOf(origin) === -1){
-      let message = 'The CORS policy for this application doesnt allow access from origin ' + origin;
-      return callback(new Error(message), false);
-    }
-    return callback(null, true);
-  }
-}));
+
+
+// let allowedOrigins = ['http://127.0.0.1:8080/', 'http://localhost:1234'];
+// app.use(cors({
+//   origin: (origin, callback) => {
+//     if(!origin) return callback(null, true);
+//     if(allowedOrigins.indexOf(origin) === -1){
+//       let message = 'The CORS policy for this application doesnt allow access from origin ' + origin;
+//       return callback(new Error(message), false);
+//     }
+//     return callback(null, true);
+//   }
+// }));
+app.use(cors());
+app.options('*', cors());
 
 // Use the morgan module for
 app.use(morgan('common'));

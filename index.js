@@ -16,6 +16,8 @@
 // type 'db.movies.find().pretty()'
 // type 'db.users.find().pretty()'
 
+// git push heroku main to update hosted api
+
 const mongoose = require('mongoose');
 const Models = require('./models.js');
 const { check, validationResult } = require('express-validator');
@@ -81,7 +83,7 @@ const cors = require('cors');
 // Creates a list of allowed domains whtin the variable allowedOrigins
 // Then compares the domains of an yincoming request with the list
 // It either allows (if domain is on list) or returns an error (if domain not on linst)
-let allowedOrigins = ['http://127.0.0.1:8080/', 'http://testsite.com'];
+let allowedOrigins = ['http://127.0.0.1:8080/', 'http://localhost:1234/'];
 app.use(cors({
   origin: (origin, callback) => {
     if(!origin) return callback(null, true);
@@ -155,7 +157,7 @@ app.get('/users', (req, res) => {
 
 
 // 1. Get a list of top movies
-app.get('/movies', passport.authenticate('jwt', {session: false}), (req, res) => {
+app.get('/movies', (req, res) => {
   Movies.find().then(
     (movies) => {
       res.status(201).json(movies);

@@ -162,7 +162,7 @@ app.get('/users', (req, res) => {
 
 
 // 1. Get a list of top movies
-app.get('/movies', passport.authenticate('jwt', {session: false}), (req, res) => {
+app.get('/movies', (req, res) => {
   Movies.find().then(
     (movies) => {
       res.status(201).json(movies);

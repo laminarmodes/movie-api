@@ -1,58 +1,47 @@
-// Used npm init to initialize project with package.json
-// Ran npm install --save express to install express module
-// Ran npm install --save body-parser to install body-parser module
-// Ran npm install --save uuid to install uuid module
 
-// to test run node index.js
-// Listen out for console
-// Make requestion (e.g. http://127.0.0.1:8080/books)
+/**
+ * @file index.js is the server that provides routes to API endpoints 
+ * that can be used to access the myFlix data (Read, Write, Update, Delete)
+ */
 
-// to check
-// type 'mongo'
-// type 'show dbs'
-// type 'user myFlixDB'
-// type db.getCollectionNames()
-
-// type 'db.movies.find().pretty()'
-// type 'db.users.find().pretty()'
-
-// git push heroku main to update hosted api
-
+/** @requires mongoose */
 const mongoose = require('mongoose');
+
+/** @requires ./model.js */
 const Models = require('./models.js');
+
+/** @requires express-validator */
 const { check, validationResult } = require('express-validator');
 
 const Movies = Models.Movie;
 const Users = Models.User;
 
-// Local database
-// mongoose.connect('mongodb://localhost:27017/myFlixDB', {
-//   useNewUrlParser: true, useUnifiedTopology: true });
-
-  mongoose.connect(process.env.CONNECTION_URI, {
-    useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.CONNECTION_URI, {
+  useNewUrlParser: true, useUnifiedTopology: true
+});
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, "MongoDB connection error"));
 
+/** @requires cors */
 const cors = require('cors');
 
-// import express module
+/** @requires espress */
 const express = require('express');
 
-// import morgan modulje
+/** @requires morgan */
 const morgan = require('morgan');
 
-// import bodyParser
+/** @requires body-parser */
 const bodyParser = require('body-parser');
 
-// import UUID
+/** @requires uuid */
 const uuid = require('uuid');
 
 // get instance of express
 const app = express();
 
-// Data
+// Test Data (for debugging)
 let topMovies = [
   {
     title: 'Interstellar',
@@ -80,40 +69,20 @@ let topMovies = [
   }
 ];
 
-
-// Creates a list of allowed domains whtin the variable allowedOrigins
-// Then compares the domains of an yincoming request with the list
-// It either allows (if domain is on list) or returns an error (if domain not on linst)
-
-
-// let allowedOrigins = ['http://127.0.0.1:8080/', 'http://localhost:1234'];
-// app.use(cors({
-//   origin: (origin, callback) => {
-//     if(!origin) return callback(null, true);
-//     if(allowedOrigins.indexOf(origin) === -1){
-//       let message = 'The CORS policy for this application doesnt allow access from origin ' + origin;
-//       return callback(new Error(message), false);
-//     }
-//     return callback(null, true);
-//   }
-// }));
 app.use(cors());
 app.options('*', cors());
-
-// Use the morgan module for
 app.use(morgan('common'));
-
-// Use the express static function so that all requests are routed to corresponding files within folder
 app.use(express.static('public'));
-
-// User body parser
 app.use(bodyParser.json());
 
-// Import auth.js file
-// 'app' argument ensures that Express is available in auth.js file
+/**
+ * Import auth.js file, 'app' argument ensures that Express is available in auth.js file 
+ * @requires ./auth */
 let auth = require('./auth')(app);
 
-// Require passport modulje and import passport.js
+/** Require passport modulje and import passport.js 
+ * @requires passport
+*/
 const passport = require('passport');
 require('./passport');
 
@@ -123,30 +92,45 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!')
 });
 
+/** 
+ * @callback jwtAuthendicationCallback
+ * @callback requestCallback
+ */
 
-// GET requests
-
-// The PATH on the server is '/'
-// Also known as the endpoint that the request is targeting
-// If a request is sent to the root directory
+/** 
+ * Gets /documentation
+ * @method GET
+ * @param {string} URL
+ * @param {jwtAuthendicationCallback}
+ * @param {requestCallback}
+ * @returns {string} message
+ */
 app.get('/', (req, res) => {
-  // HANDLER, the function to be executed when the route is matched
-  // It is the logic to send a response
-  /* The function is versatile in that it can send responses containing
-  different types of data—strings, objects, you name it. Express will
-  read whatever data you pass it as a parameter and choose the data
-  type accordingly */
   let respondText = 'Hi there, enjoying this 7 month course so far';
   res.send(respondText);
 });
 
-// If the endpoint target is /documentation
+/** 
+ * Gets /documentation
+ * @method GET
+ * @param {string} URL
+ * @param {jwtAuthendicationCallback}
+ * @param {requestCallback}
+ * @returns {html} file
+ */
 app.get('/documentation', (req, res) => {
-  // return the documentation.html page
-  res.sendFile('public/documentation.html', { root: __dirname});
+  res.sendFile('public/documentation.html', { root: __dirname });
 });
 
-// Get all users
+/** 
+ * Gets all users
+ * @method GET
+ * @param {string} URL
+ * @param {jwtAuthendicationCallback}
+ * @param {requestCallback}
+ * @example /users
+ * @returns {Promise<object>}
+ */
 app.get('/users', (req, res) => {
   Users.find().then(
     (users) => {
@@ -158,11 +142,16 @@ app.get('/users', (req, res) => {
       });
 });
 
-
-
-
-// 1. Get a list of top movies
-app.get('/movies', passport.authenticate('jwt', {session: false}), (req, res) => {
+/** 
+ * Gets a list of top movies
+ * @method GET
+ * @param {string} URL
+ * @param {jwtAuthendicationCallback}
+ * @param {requestCallback}
+ * @example /movies
+ * @returns {Promise<object>}
+ */
+app.get('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.find().then(
     (movies) => {
       res.status(201).json(movies);
@@ -173,8 +162,16 @@ app.get('/movies', passport.authenticate('jwt', {session: false}), (req, res) =>
       });
 });
 
-// 2. Get data about a specific movie title
-app.get('/movies/:Title', passport.authenticate('jwt', {session: false}), (req, res) => {
+/** 
+ * Gets data about a specific movie title
+ * @method GET
+ * @param {string} URL
+ * @param {jwtAuthendicationCallback}
+ * @param {requestCallback}
+ * @example /movies/<movie_id>
+ * @returns {Promise<object>}
+ */
+app.get('/movies/:Title', passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.findOne({ Title: req.params.Title }).then(
     (movie) => {
       res.json(movie);
@@ -185,8 +182,16 @@ app.get('/movies/:Title', passport.authenticate('jwt', {session: false}), (req, 
       });
 });
 
-// 3. Get movie names under a specific genere
-app.get('/movies/genres/:Genre', passport.authenticate('jwt', {session: false}), (req, res) => {
+/** 
+ * Gets movie names under a specific genere
+ * @method GET
+ * @param {string} URL
+ * @param {jwtAuthendicationCallback}
+ * @param {requestCallback}
+ * @example /movies/genres/action
+ * @returns {Promise<object>}
+ */
+app.get('/movies/genres/:Genre', passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.find({ 'Genre.Name': req.params.Genre }).then(
     (movies) => {
       res.status(201).json(movies);
@@ -197,8 +202,16 @@ app.get('/movies/genres/:Genre', passport.authenticate('jwt', {session: false}),
       });
 });
 
-// 4. Get information about a specific movie director by name
-app.get('/movies/director/:Name', passport.authenticate('jwt', {session: false}), (req, res) => {
+/** 
+ * Gets information about a specific movie director by name
+ * @method GET
+ * @param {string} URL
+ * @param {jwtAuthendicationCallback}
+ * @param {requestCallback}
+ * @example /movies/director/<director_name>
+ * @returns {Promise<object>}
+ */
+app.get('/movies/director/:Name', passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.findOne({ 'Director.Name': req.params.Name }).then(
     (movie) => {
       res.json(movie.Director);
@@ -209,7 +222,14 @@ app.get('/movies/director/:Name', passport.authenticate('jwt', {session: false})
       });
 });
 
-// Get a user by username
+/** 
+ * Gets userdata for the specified username
+ * @method GET
+ * @param {string} URL
+ * @param {requestCallback}
+ * @example /users/<user_name>
+ * @returns {Promise<object>}
+ */
 app.get('/users/:Username', (req, res) => {
   Users.findOne({ Username: req.params.Username }).then(
     (user) => {
@@ -221,113 +241,145 @@ app.get('/users/:Username', (req, res) => {
       });
 });
 
-// 5. Allow new users to register
+/** 
+ * Registers new users
+ * @method POST
+ * @param {string} URL
+ * @param {requestCallback}
+ * @returns {Promise<object>}
+ */
 app.post('/users', [
-  check('Username', 'Username is required').isLength({min: 5}),
+  check('Username', 'Username is required').isLength({ min: 5 }),
   check('Username', 'Username contains non-alphanumeric characters, not allwed.').isAlphanumeric(),
   check('Password', 'Password is required').not().isEmpty(),
   check('Email', 'Email does not appear to be validated').isEmail()
 ], (req, res) => {
-  // Check the validation object for errors
   let errors = validationResult(req);
-  if(!errors.isEmpty()) {
+  if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
-
-  // Hash password
   let hashedPassword = Users.hashPassword(req.body.Password);
   Users.findOne({ Username: req.body.Username })
-  .then((user) => {
-    if (user) {
-      return res.status(400).send(req.body.Username + ' already exists');
-    } else {
-      Users.create({
-        Username: req.body.Username,
-        Password: hashedPassword,
-        Email: req.body.Email,
-        Birthday: req.body.Birthday
-      }).then(
-        (user) => { res.status(201).json(user) }
-      ).catch(
-        (error) => {
-          console.error(error);
-          res.status(500).send('Error: ' + error);
-        })
-    }
-  }).catch((error) => {
-    console.error(error);
-    res.status(500).send('Error: ' + error);
-  })
+    .then((user) => {
+      if (user) {
+        return res.status(400).send(req.body.Username + ' already exists');
+      } else {
+        Users.create({
+          Username: req.body.Username,
+          Password: hashedPassword,
+          Email: req.body.Email,
+          Birthday: req.body.Birthday
+        }).then(
+          (user) => { res.status(201).json(user) }
+        ).catch(
+          (error) => {
+            console.error(error);
+            res.status(500).send('Error: ' + error);
+          })
+      }
+    }).catch((error) => {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
+    })
 });
 
-// 6. All users to update account information (e.g. username)
+/** 
+ * Updates user information
+ * @method PUT
+ * @param {string} URL
+ * @param {requestCallback}
+ * @returns {Promise<object>}
+ */
 app.put('/users/:Username', [
-  check('Username', 'Username is required').isLength({min: 5}),
+  check('Username', 'Username is required').isLength({ min: 5 }),
   check('Username', 'Username contains non-alphanumeric characters, not allwed.').isAlphanumeric(),
   check('Password', 'Password is required').not().isEmpty(),
   check('Email', 'Email does not appear to be validated').isEmail()
 ],
-(req, res) => {
-  // Check the validation object for errors
-  let errors = validationResult(req);
-  if(!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
-  }
-  let hashedPassword = Users.hashPassword(req.body.Password);
-  Users.findOneAndUpdate({ Username: req.params.Username }, {
-    $set:
-    {
-      Username: req.body.Username,
-      Password: hashedPassword,
-      Email: req.body.Email,
-      Birthday: req.body.Birthday
+  (req, res) => {
+    let errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
     }
-  },
-  { new: true },
-  (err, updatedUser) => {
-    if(err) {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    } else {
-      res.json(updatedUser);
-    }
+    let hashedPassword = Users.hashPassword(req.body.Password);
+    Users.findOneAndUpdate({ Username: req.params.Username }, {
+      $set:
+      {
+        Username: req.body.Username,
+        Password: hashedPassword,
+        Email: req.body.Email,
+        Birthday: req.body.Birthday
+      }
+    },
+      { new: true },
+      (err, updatedUser) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send('Error: ' + err);
+        } else {
+          res.json(updatedUser);
+        }
+      });
   });
-});
 
-// 7. Add a movie to a user's list of favorites
-app.post('/users/:Username/movies/:MovieID', passport.authenticate('jwt', {session: false}), (req, res) => {
+/** 
+ * Adds movie to favorites
+ * @method PUT
+ * @param {string} URL
+ * @param {jwtAuthendicationCallback}
+ * @param {requestCallback}
+ * @example /users/<user_name>/movies/<movie_id>
+ * @returns {Promise<object>}
+ */
+app.post('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOneAndUpdate({ Username: req.params.Username }, {
     $push: { FavoriteMovies: req.params.MovieID }
   },
-  { new: true },
-  (err, updatedUser) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    } else {
-      res.json(updatedUser);
-    }
-  });
+    { new: true },
+    (err, updatedUser) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+      } else {
+        res.json(updatedUser);
+      }
+    });
 });
 
-// 8. Remove a movie from the favorites list 61b4e20951e9f9068e6eb7d3
-app.delete('/users/:Username/movies/:MovieID', passport.authenticate('jwt', {session: false}), (req, res) => {
+/** 
+ * Removes movie from favorites
+ * @method DELETE
+ * @param {string} URL
+ * @param {jwtAuthendicationCallback}
+ * @param {requestCallback}
+ * @example /users/<user_name>/movies/<movie_id>
+ * @returns {Promise<object>}
+ */
+app.delete('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOneAndUpdate({ Username: req.params.Username }, {
     $pull: { FavoriteMovies: req.params.MovieID }
   },
-  { new: true },
-  (err, updatedUser) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    } else {
-      res.json(updatedUser);
-    }
-  });
+    { new: true },
+    (err, updatedUser) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+      } else {
+        res.json(updatedUser);
+      }
+    });
 });
 
-// 9. Delete a user account
-app.delete('/users/:Username', passport.authenticate('jwt', {session: false}), (req, res) => {
+/** 
+ * Deletes a user's account
+ * @method DELETE
+ * @param {string} URL
+ * @param {jwtAuthendicationCallback}
+ * @param {requestCallback}
+ * @example /users/<user_name>
+ * @returns {Promise<object>}
+ */
+app.delete('/users/:Username', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOneAndRemove({ Username: req.params.Username }).then(
     (user) => {
       if (!user) {
@@ -343,12 +395,7 @@ app.delete('/users/:Username', passport.authenticate('jwt', {session: false}), (
     )
 });
 
-// Listen for requests
-// app.listen(8080, () => {
-//   console.log('The app is listening on port 8080');
-// });
-
-
+// Reference to port hosted on the server
 const port = process.env.PORT || 8080;
 app.listen(port, '0.0.0.0', () => {
   console.log('Listening on Port ' + port);
